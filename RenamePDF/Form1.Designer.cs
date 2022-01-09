@@ -33,12 +33,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.SelectSourcePDF = new System.Windows.Forms.Button();
             this.ReceiptGroup = new System.Windows.Forms.GroupBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.PurchaseDate = new System.Windows.Forms.DateTimePicker();
-            this.ShopName = new System.Windows.Forms.ComboBox();
             this.Price = new System.Windows.Forms.TextBox();
+            this.ShopName = new System.Windows.Forms.ComboBox();
+            this.PurchaseDate = new System.Windows.Forms.DateTimePicker();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.DestinationPDF = new System.Windows.Forms.TextBox();
             this.SelectDestinationDirectory = new System.Windows.Forms.Button();
@@ -54,10 +54,12 @@
             // 
             this.SourcePDF.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.SourcePDF.BackColor = System.Drawing.Color.Pink;
             this.SourcePDF.Location = new System.Drawing.Point(69, 7);
             this.SourcePDF.Name = "SourcePDF";
             this.SourcePDF.Size = new System.Drawing.Size(614, 19);
             this.SourcePDF.TabIndex = 1;
+            this.SourcePDF.Leave += new System.EventHandler(this.ReceiptControl_Leave);
             // 
             // label1
             // 
@@ -96,23 +98,35 @@
             this.ReceiptGroup.TabStop = false;
             this.ReceiptGroup.Text = "領収書情報";
             // 
-            // label2
+            // Price
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 23);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 12);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "購入日";
+            this.Price.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.Price.BackColor = System.Drawing.Color.Pink;
+            this.Price.Location = new System.Drawing.Point(691, 19);
+            this.Price.Name = "Price";
+            this.Price.Size = new System.Drawing.Size(163, 19);
+            this.Price.TabIndex = 5;
+            this.Price.Leave += new System.EventHandler(this.ReceiptControl_Leave);
             // 
-            // label3
+            // ShopName
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(189, 21);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(29, 12);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "店名";
+            this.ShopName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ShopName.BackColor = System.Drawing.Color.Pink;
+            this.ShopName.FormattingEnabled = true;
+            this.ShopName.Location = new System.Drawing.Point(224, 18);
+            this.ShopName.Name = "ShopName";
+            this.ShopName.Size = new System.Drawing.Size(426, 20);
+            this.ShopName.TabIndex = 4;
+            this.ShopName.Leave += new System.EventHandler(this.ReceiptControl_Leave);
+            // 
+            // PurchaseDate
+            // 
+            this.PurchaseDate.Location = new System.Drawing.Point(53, 18);
+            this.PurchaseDate.Name = "PurchaseDate";
+            this.PurchaseDate.Size = new System.Drawing.Size(130, 19);
+            this.PurchaseDate.TabIndex = 3;
+            this.PurchaseDate.Leave += new System.EventHandler(this.ReceiptControl_Leave);
             // 
             // label4
             // 
@@ -124,33 +138,23 @@
             this.label4.TabIndex = 2;
             this.label4.Text = "金額";
             // 
-            // PurchaseDate
+            // label3
             // 
-            this.PurchaseDate.Location = new System.Drawing.Point(53, 18);
-            this.PurchaseDate.Name = "PurchaseDate";
-            this.PurchaseDate.Size = new System.Drawing.Size(130, 19);
-            this.PurchaseDate.TabIndex = 3;
-            this.PurchaseDate.Leave += new System.EventHandler(this.ReceiptControl_Leave);
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(189, 21);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(29, 12);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "店名";
             // 
-            // ShopName
+            // label2
             // 
-            this.ShopName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ShopName.FormattingEnabled = true;
-            this.ShopName.Location = new System.Drawing.Point(224, 18);
-            this.ShopName.Name = "ShopName";
-            this.ShopName.Size = new System.Drawing.Size(426, 20);
-            this.ShopName.TabIndex = 4;
-            this.ShopName.Leave += new System.EventHandler(this.ReceiptControl_Leave);
-            // 
-            // Price
-            // 
-            this.Price.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.Price.Location = new System.Drawing.Point(691, 19);
-            this.Price.Name = "Price";
-            this.Price.Size = new System.Drawing.Size(163, 19);
-            this.Price.TabIndex = 5;
-            this.Price.Leave += new System.EventHandler(this.ReceiptControl_Leave);
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 23);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 12);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "購入日";
             // 
             // label5
             // 
