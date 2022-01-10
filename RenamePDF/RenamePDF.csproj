@@ -100,7 +100,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CompanyNameList.txt">
+    <Content Include="ShopNameList.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

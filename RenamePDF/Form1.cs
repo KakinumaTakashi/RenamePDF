@@ -19,11 +19,26 @@ namespace RenamePDF
         /// <summary>
         /// 店名リストファイル名
         /// </summary>
-        private const string COMPANYNAMELISTFILE = @"CompanyNameList.txt";
+        private const string SHOPNAMELISTFILE = @"ShopNameList.txt";
+        /// <summary>
+        /// コピー元フォルダ
+        /// </summary>
+        private string SourceDirectory = "";
         /// <summary>
         /// コピー先フォルダ
         /// </summary>
-        private string DestinationPDFDirectory = "";
+        private string DestinationDirectory = "";
+        /// <summary>
+        /// 店名リスト
+        /// </summary>
+        private List<string> ShopNameList = new List<string>();
+        /// <summary>
+        /// サポートイメージリスト
+        /// </summary>
+        private List<string> SupportExtensionList = new List<string>()
+        {
+            ".PDF", ".JPEG", ".JPG"
+        };
 
 
         /// <summary>
@@ -34,9 +49,10 @@ namespace RenamePDF
             InitializeComponent();
 
             // 店名リストのロード
-            this.LoadCompanyNameList();
+            this.LoadShopNameList();
+            this.ShopName.Items.AddRange(this.ShopNameList.ToArray());
             // コピー先ファイル名の更新
-            this.UpdateDestinationPDF();
+            this.UpdateDestinationFilePath();
             // 実行ボタンの有効判定
             this.CheckExecuteEnable();
         }
@@ -44,23 +60,23 @@ namespace RenamePDF
         /// <summary>
         /// 店名リストをロードする
         /// </summary>
-        void LoadCompanyNameList()
+        void LoadShopNameList()
         {
             // 店名リストが無い場合は終了
-            if (!File.Exists(COMPANYNAMELISTFILE))
+            if (!File.Exists(SHOPNAMELISTFILE))
             {
                 return;
             }
 
             // 店名リストをプルダウンリストに展開
-            using (StreamReader reader = new StreamReader(COMPANYNAMELISTFILE, Encoding.GetEncoding("shift_jis")))
+            using (StreamReader reader = new StreamReader(SHOPNAMELISTFILE, Encoding.GetEncoding("shift_jis")))
             {
                 while (!reader.EndOfStream)
                 {
                     string line = reader.ReadLine();
                     if (String.IsNullOrEmpty(line)) continue;
 
-                    this.ShopName.Items.Add(line);
+                    this.ShopNameList.Add(line);
                 }
 
                 reader.Close();
@@ -68,23 +84,26 @@ namespace RenamePDF
         }
 
         /// <summary>
-        /// コピー元PDF選択のクリックイベント
+        /// コピー元イメージ選択のクリックイベント
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SelectSourcePDF_Click(object sender, EventArgs e)
+        private void SelectSourceImage_Click(object sender, EventArgs e)
         {
             // ファイル選択ダイアログを表示
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                dialog.Filter = @"PDFファイル|*.pdf";
+                dialog.Filter = @"PDFファイル|*.pdf|JPEGファイル|*.jpeg;*.jpg";
+                dialog.InitialDirectory = this.SourceDirectory;
 
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                 {
-                    // PDFをロード
-                    this.LoadPDF(dialog.FileName);
-                    // 実行ボタンの有効判定
-                    this.CheckExecuteEnable();
+                    this.SourceDirectory = Path.GetDirectoryName(dialog.FileName);
+
+                    // イメージをロード
+                    this.LoadImage(dialog.FileName);
+                    // コピー先ファイル名の更新
+                    this.UpdateDestinationFilePath();
                 }
             }
         }
@@ -99,9 +118,9 @@ namespace RenamePDF
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
 
             // PDFをロード
-            this.LoadPDF(files[0]);
-            // 実行ボタンの有効判定
-            this.CheckExecuteEnable();
+            this.LoadImage(files[0]);
+            // コピー先ファイル名の更新
+            this.UpdateDestinationFilePath();
         }
 
         /// <summary>
@@ -111,6 +130,16 @@ namespace RenamePDF
         /// <param name="e"></param>
         private void Form1_DragEnter(object sender, DragEventArgs e)
         {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            string extension = Path.GetExtension(files[0]).ToUpper();
+
+            // サポートイメージ以外はドロップ無効
+            if (!this.SupportExtensionList.Contains(extension))
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+            // ファイルのドロップのみ有効
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 e.Effect = DragDropEffects.All;
@@ -122,15 +151,32 @@ namespace RenamePDF
         }
 
         /// <summary>
-        /// PDFをロードする
+        /// イメージをロードする
         /// </summary>
-        /// <param name="filePath">PDFファイルパス</param>
-        private void LoadPDF(string filePath)
+        /// <param name="filePath">イメージファイルパス</param>
+        private void LoadImage(string filePath)
         {
             // ファイルパスを設定
-            this.SourcePDF.Text = filePath;
-            // プレビューにPDFをロード
-            this.PDFPreview.LoadFile(filePath);
+            this.SourceImage.Text = filePath;
+
+            string extension = Path.GetExtension(filePath).ToUpper();
+
+            if (extension == ".JPEG" || extension == ".JPG")
+            {
+                this.ImagePreviewPanel.Visible = true;
+                this.PDFPreview.Visible = false;
+
+                // プレビューにイメージをロード
+                this.ImagePreview.ImageLocation = filePath;
+            }
+            else if (extension == ".PDF")
+            {
+                this.ImagePreviewPanel.Visible = false;
+                this.PDFPreview.Visible = true;
+
+                // プレビューにPDFをロード
+                this.PDFPreview.LoadFile(filePath);
+            }
         }
 
         /// <summary>
@@ -144,7 +190,7 @@ namespace RenamePDF
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
                 dialog.FileName = "Select Folder";
-                dialog.InitialDirectory = this.DestinationPDFDirectory;
+                dialog.InitialDirectory = this.DestinationDirectory;
                 dialog.Filter = "Folder |.";
                 dialog.ValidateNames = false;
                 dialog.CheckFileExists = false;
@@ -153,9 +199,9 @@ namespace RenamePDF
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                 {
                     // コピー先ディレクトリに選択したディレクトリを設定
-                    this.DestinationPDFDirectory = Path.GetDirectoryName(dialog.FileName);
+                    this.DestinationDirectory = Path.GetDirectoryName(dialog.FileName);
                     // コピー先ファイル名の更新
-                    this.UpdateDestinationPDF();
+                    this.UpdateDestinationFilePath();
                 }
             }
         }
@@ -168,7 +214,7 @@ namespace RenamePDF
         private void CopyExecute_Click(object sender, EventArgs e)
         {
             // 同名ファイルのチェック
-            if (File.Exists(this.DestinationPDF.Text))
+            if (File.Exists(this.DestinationImage.Text))
             {
                 MessageBox.Show("同名のファイルが既に存在します。", this.Text,
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -178,10 +224,19 @@ namespace RenamePDF
             try
             {
                 // コピー先へファイルをコピー
-                File.Copy(this.SourcePDF.Text, this.DestinationPDF.Text);
+                File.Copy(this.SourceImage.Text, this.DestinationImage.Text);
 
                 MessageBox.Show("コピーが完了しました。", this.Text,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // コピー元ファイルを削除
+                if (this.DeleteCopiedFile.Checked)
+                {
+                    File.Delete(this.SourceImage.Text);
+                }
+
+                // 店名を追加
+                this.SaveNewShopName();
             }
             catch (Exception exception)
             {
@@ -191,47 +246,40 @@ namespace RenamePDF
         }
 
         /// <summary>
+        /// 未登録の店名をリストファイルに追加する
+        /// </summary>
+        private void SaveNewShopName()
+        {
+            // 登録チェック
+            if (this.ShopNameList.Contains(this.ShopName.Text))
+            {
+                return;
+            }
+            // 店名リストに追加
+            this.ShopNameList.Add(this.ShopName.Text);
+            // リストファイルへ出力
+            File.AppendAllText(
+                SHOPNAMELISTFILE,
+                this.ShopName.Text + Environment.NewLine,
+                Encoding.GetEncoding("shift_jis")
+            );
+        }
+
+        /// <summary>
         /// 領収書コントロールのフォーカスアウトイベント
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ReceiptControl_Leave(object sender, EventArgs e)
         {
-            //if (String.IsNullOrEmpty(this.SourcePDF.Text))
-            //{
-            //    this.SourcePDF.BackColor = Color.Pink;
-            //}
-            //else
-            //{
-            //    this.SourcePDF.BackColor = SystemColors.Window;
-            //}
-
-            //if (String.IsNullOrEmpty(this.ShopName.Text))
-            //{
-            //    this.ShopName.BackColor = Color.Pink;
-            //}
-            //else
-            //{
-            //    this.ShopName.BackColor = SystemColors.Window;
-            //}
-
-            //if (String.IsNullOrEmpty(this.Price.Text))
-            //{
-            //    this.Price.BackColor = Color.Pink;
-            //}
-            //else
-            //{
-            //    this.Price.BackColor = SystemColors.Window;
-            //}
-
             // コピー先ファイル名の更新
-            this.UpdateDestinationPDF();
+            this.UpdateDestinationFilePath();
         }
 
         /// <summary>
         /// コピー先ファイル名を更新する
         /// </summary>
-        private void UpdateDestinationPDF()
+        private void UpdateDestinationFilePath()
         {
             // 領収書コントロールからコピー先ファイル名を生成
             string[] fileNameParts = new string[3];
@@ -240,12 +288,18 @@ namespace RenamePDF
             fileNameParts[2] = this.Price.Text;
 
             string destFileName = String.Join("_", fileNameParts);
-            if (destFileName.Length > 0)
+
+            if (!String.IsNullOrEmpty(this.Comment.Text))
             {
-                destFileName = Path.ChangeExtension(destFileName, "pdf");
+                destFileName += "_" + this.Comment.Text;
             }
 
-            this.DestinationPDF.Text = Path.Combine(this.DestinationPDFDirectory, destFileName);
+            if (destFileName.Length > 0 && !String.IsNullOrEmpty(this.SourceImage.Text))
+            {
+                destFileName += Path.GetExtension(this.SourceImage.Text);
+            }
+
+            this.DestinationImage.Text = Path.Combine(this.DestinationDirectory, destFileName);
             // 実行ボタンの有効判定
             this.CheckExecuteEnable();
         }
@@ -256,35 +310,49 @@ namespace RenamePDF
         private void CheckExecuteEnable()
         {
             bool enable = true;
+            bool receiptGroupEnable = true;
 
-            if (String.IsNullOrEmpty(this.SourcePDF.Text))
+            // コピー元
+            if (String.IsNullOrEmpty(this.SourceImage.Text))
             {
-                this.SourcePDF.BackColor = Color.Pink;
+                this.SourceImage.BackColor = Color.Pink;
                 enable = false;
             }
             else
             {
-                this.SourcePDF.BackColor = SystemColors.Window;
+                this.SourceImage.BackColor = SystemColors.Window;
             }
-
+            // 店名
             if (String.IsNullOrEmpty(this.ShopName.Text))
             {
                 this.ShopName.BackColor = Color.Pink;
                 enable = false;
+                receiptGroupEnable = false;
             }
             else
             {
                 this.ShopName.BackColor = SystemColors.Window;
             }
-
+            // 金額
             if (String.IsNullOrEmpty(this.Price.Text))
             {
                 this.Price.BackColor = Color.Pink;
                 enable = false;
+                receiptGroupEnable = false;
             }
             else
             {
                 this.Price.BackColor = SystemColors.Window;
+            }
+            // コピー先
+            if (String.IsNullOrEmpty(this.DestinationDirectory) || !receiptGroupEnable)
+            {
+                this.DestinationImage.BackColor = Color.Pink;
+                enable = false;
+            }
+            else
+            {
+                this.DestinationImage.BackColor = SystemColors.Window;
             }
 
             this.CopyExecute.Enabled = enable;
