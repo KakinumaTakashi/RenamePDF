@@ -257,6 +257,7 @@ namespace RenamePDF
             }
             // 店名リストに追加
             this.ShopNameList.Add(this.ShopName.Text);
+            this.ShopName.Items.Add(this.ShopName.Text);
             // リストファイルへ出力
             File.AppendAllText(
                 SHOPNAMELISTFILE,
@@ -283,7 +284,7 @@ namespace RenamePDF
         {
             // 領収書コントロールからコピー先ファイル名を生成
             string[] fileNameParts = new string[3];
-            fileNameParts[0] = this.PurchaseDate.Value.ToString("yyyyMMdd");
+            fileNameParts[0] = this.PurchaseDate.Value.ToString("yyyy-MM-dd");
             fileNameParts[1] = this.ShopName.Text;
             fileNameParts[2] = this.Price.Text;
 
