@@ -33,6 +33,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.SelectSourceImage = new System.Windows.Forms.Button();
             this.ReceiptGroup = new System.Windows.Forms.GroupBox();
+            this.Comment = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.Price = new System.Windows.Forms.TextBox();
             this.ShopName = new System.Windows.Forms.ComboBox();
             this.PurchaseDate = new System.Windows.Forms.DateTimePicker();
@@ -48,8 +50,6 @@
             this.PDFPreview = new AxAcroPDFLib.AxAcroPDF();
             this.CopyExecute = new System.Windows.Forms.Button();
             this.DeleteCopiedFile = new System.Windows.Forms.CheckBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.Comment = new System.Windows.Forms.TextBox();
             this.ReceiptGroup.SuspendLayout();
             this.PDFPreviewGroup.SuspendLayout();
             this.ImagePreviewPanel.SuspendLayout();
@@ -106,6 +106,23 @@
             this.ReceiptGroup.TabIndex = 6;
             this.ReceiptGroup.TabStop = false;
             this.ReceiptGroup.Text = "領収書情報";
+            // 
+            // Comment
+            // 
+            this.Comment.Location = new System.Drawing.Point(53, 43);
+            this.Comment.Name = "Comment";
+            this.Comment.Size = new System.Drawing.Size(801, 19);
+            this.Comment.TabIndex = 4;
+            this.Comment.Leave += new System.EventHandler(this.ReceiptControl_Leave);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 46);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(29, 12);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "補足";
             // 
             // Price
             // 
@@ -267,23 +284,6 @@
             this.DeleteCopiedFile.Text = "コピー完了後にコピー元ファイルを削除する。";
             this.DeleteCopiedFile.UseVisualStyleBackColor = true;
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 46);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(29, 12);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "補足";
-            // 
-            // Comment
-            // 
-            this.Comment.Location = new System.Drawing.Point(53, 43);
-            this.Comment.Name = "Comment";
-            this.Comment.Size = new System.Drawing.Size(801, 19);
-            this.Comment.TabIndex = 4;
-            this.Comment.Leave += new System.EventHandler(this.ReceiptControl_Leave);
-            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -300,6 +300,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.SourceImage);
             this.Controls.Add(this.PDFPreviewGroup);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(900, 800);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
